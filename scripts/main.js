@@ -19,6 +19,8 @@
 // get refs to the input and output elements in the page
 const input = document.getElementById("target");
 const output = document.querySelector("output");
+const list = document.getElementById("available-targets");
+
 
 // when the input has focus and enter is pressed, invoke the function named later
 input.addEventListener("keydown", (ev) => {
@@ -26,6 +28,7 @@ input.addEventListener("keydown", (ev) => {
   if (ev.key === "Enter") {
     console.log("Enter detected. current value:", input.value);
     // TODO use the provided later() function here
+    later(input.value, setOutput);
   }
 });
 
@@ -38,13 +41,46 @@ input.addEventListener("keydown", (ev) => {
 
 //
 const setOutput = (result) => {
-  console.log("setOutput", result);
+  console.log("setOutput", result.target, result.valediction);
   // TODO see comments just above 🙄
+  output.textContent = result.valediction + ", " + result.target;
 };
 
 // for Part 2
 // change the code so that rather than directly requesting a valediction with the user's input,
-// the page instead queries for matching targets using the provided options() function 
+// the page instead queries for matching targets using the provided options() function
 // (if the user hasn't entered anything, simply exclude the query argument in your invocation to options).
 // add each of the resulting target options as buttons in list items in the ul.
 // when any of these buttons are clicked, user the later() function to request the corresponding valediction and update the output element as in Part 1
+input.addEventListener("keydown", (ev) => {
+    list.innerHTML = "";
+
+    const handleOptions = (keys) => {
+      if (keys.length === 0) {
+        const newLi = document.createElement("li");
+        newLi.textContent = "No matches found";
+        list.appendChild(newLi);
+        return;
+      }
+
+      keys.forEach((key) => {
+        const newLi = document.createElement("li");
+        const newButton = document.createElement("button");
+        newButton.textContent = key;
+
+        newButton.addEventListener("click", () => {
+          later(key, setOutput);
+        });
+
+        newLi.appendChild(newButton);
+        list.appendChild(newLi);
+      });
+    };
+
+
+    if (input.value === "") {
+      options(handleOptions);
+    } else {
+      options(handleOptions, input.value);
+    }
+});
